@@ -1,0 +1,12 @@
+# Godot 4
+.godot/
+/android/
+
+# 导出产物
+/build/
+/export/
+*.pck
+*.zip
+
+# macOS
+.DS_Store
