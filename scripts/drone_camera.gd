@@ -1,6 +1,7 @@
 extends Camera2D
 
-const MID_Y := 360.0
+const MID_Y := 419.0
+const BASE_ZOOM := 2.0
 const SWAY := 6.0
 
 const SWING_TIME := 0.72
@@ -16,6 +17,7 @@ var swing_sign := 1.0
 func _ready() -> void:
 	position_smoothing_enabled = false
 	global_position = Vector2(target.global_position.x, MID_Y)
+	zoom = Vector2(BASE_ZOOM, BASE_ZOOM)
 	make_current()
 
 func trigger(sign_value: float) -> void:
@@ -25,7 +27,7 @@ func trigger(sign_value: float) -> void:
 func snap_to(pos: Vector2) -> void:
 	global_position = Vector2(pos.x, MID_Y)
 	rotation = 0.0
-	zoom = Vector2.ONE
+	zoom = Vector2(BASE_ZOOM, BASE_ZOOM)
 
 func set_bounds(left: float, right: float) -> void:
 	limit_left = int(left)
@@ -46,8 +48,8 @@ func _process(delta: float) -> void:
 		swing = minf(1.0, swing + delta / SWING_TIME)
 		var wave := sin(PI * swing)
 		rotation = SWING_ANGLE * swing_sign * wave
-		var pulled := 1.0 - (1.0 - SWING_ZOOM) * wave
+		var pulled := BASE_ZOOM * (1.0 - (1.0 - SWING_ZOOM) * wave)
 		zoom = Vector2(pulled, pulled * (1.0 - (1.0 - SWING_SQUASH) * wave))
 	else:
 		rotation = lerp_angle(rotation, 0.0, 1.0 - exp(-8.0 * delta))
-		zoom = zoom.lerp(Vector2.ONE, 1.0 - exp(-8.0 * delta))
+		zoom = zoom.lerp(Vector2(BASE_ZOOM, BASE_ZOOM), 1.0 - exp(-8.0 * delta))
