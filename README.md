@@ -32,9 +32,10 @@ Playable single-floor prototype. No win condition yet — the loop is work, shif
 
 The game opens with you sitting at your desk, staring at nothing. Press A or D to stand up and start.
 
-The floor is shown as a **side-on cross-section**: wall at the back, people in the middle, desks and
-plants in front of them. Walk to either end of the corridor and the drone swings around the corner into
-the next stretch.
+The building is shown as a **facade cross-section**: curtain-wall mullions and floor slabs frame the
+view, you can see into the neighbouring floors, and the ceiling sits low — the floor is only three
+desks tall. Wall at the back, people in the middle, desks and plants in front of them. Walk to either
+end of the corridor and the drone swings around the corner into the next stretch.
 
 ## What is in the build
 

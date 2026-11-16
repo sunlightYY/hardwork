@@ -1,8 +1,8 @@
 extends CharacterBody2D
 
-const SPEED := 130.0
-const SIGHT := 340.0
-const CONTACT := 30.0
+const SPEED := 170.0
+const SIGHT := 700.0
+const CONTACT := 110.0
 
 var player: Node2D
 var home := Vector2.ZERO
@@ -18,6 +18,7 @@ func _ready() -> void:
 	rect.size = Vector2(26, 26)
 	shape.shape = rect
 	add_child(shape)
+	scale = Vector2(2.6, 2.6)
 	home = global_position
 
 func set_active(value: bool) -> void:

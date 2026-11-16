@@ -188,6 +188,7 @@ func _intro() -> void:
 	WorldState.post_message("SOMETHING ON YOUR WRIST JUST CLICKED.", 3.0)
 	player.frozen = false
 
+
 func _on_caught() -> void:
 	if busy:
 		return

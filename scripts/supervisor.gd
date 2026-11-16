@@ -2,13 +2,13 @@ extends CharacterBody2D
 
 const SHEET := preload("res://assets/art/supervisor.png")
 
-const SPEED := 95.0
-const VIEW_DISTANCE := 300.0
-const VIEW_HALF_ANGLE := 0.75
+const SPEED := 130.0
+const VIEW_DISTANCE := 560.0
+const VIEW_HALF_ANGLE := 0.26
 const SCOLD_AFTER := 1.2
 const SCOLD_COOLDOWN := 4.0
 
-var waypoints := [Vector2(1200, 618), Vector2(4100, 618)]
+var waypoints := [Vector2(1200, 442), Vector2(4100, 442)]
 var waypoint_index := 0
 var player: Node2D
 var facing := Vector2.RIGHT
@@ -27,7 +27,7 @@ func _ready() -> void:
 	sprite = AnimatedSprite2D.new()
 	sprite.frames = Sheet.frames(SHEET)
 	sprite.animation = "idle_down"
-	sprite.scale = Vector2(2.0, 2.0)
+	sprite.scale = Vector2(4.0, 4.0)
 	add_child(sprite)
 	global_position = waypoints[0]
 
@@ -83,16 +83,19 @@ func _can_see_player() -> bool:
 
 func _draw() -> void:
 	var angle := facing.angle()
-	var points := PackedVector2Array([Vector2.ZERO])
+	var origin := Vector2(0, -46)
+	var points := PackedVector2Array([origin])
 	var steps := 14
 	for i in range(steps + 1):
 		var a := angle - VIEW_HALF_ANGLE + (2.0 * VIEW_HALF_ANGLE) * float(i) / float(steps)
-		points.append(Vector2(cos(a), sin(a)) * VIEW_DISTANCE)
-	var cone := Color(0.55, 0.75, 1.0, 0.10)
+		points.append(origin + Vector2(cos(a), sin(a)) * VIEW_DISTANCE)
+	var cone := Color(0.60, 0.78, 1.0, 0.08)
 	if suspicion > 0.4:
-		cone = Color(1.0, 0.30, 0.30, 0.22)
+		cone = Color(1.0, 0.32, 0.32, 0.16)
+	for i in range(points.size()):
+		points[i].y = clampf(points[i].y, 366.0, 514.0)
 	draw_colored_polygon(points, cone)
 
-	draw_set_transform(Vector2(0, 22), 0.0, Vector2(1.0, 0.35))
-	draw_circle(Vector2.ZERO, 18.0, Color(0, 0, 0, 0.18))
+	draw_set_transform(Vector2(0, 78), 0.0, Vector2(1.0, 0.32))
+	draw_circle(Vector2.ZERO, 42.0, Color(0, 0, 0, 0.18))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
