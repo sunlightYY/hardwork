@@ -1,7 +1,7 @@
 extends Camera2D
 
-const MID_Y := 419.0
-const BASE_ZOOM := 2.0
+const MID_Y := 360.0
+const BASE_ZOOM := 1.0
 const SWAY := 6.0
 
 const SWING_TIME := 0.72

@@ -58,7 +58,13 @@ end of the corridor and the drone swings around the corner into the next stretch
 
 ## Assets
 
-Character art is generated from Aseprite by a Lua script:
+The room backdrop is `assets/art/room.png`, downscaled from the reference illustration to 1280×720.
+The floor band, the sliver of the floor above and the ceiling lights of the floor below all come from
+that image.
+
+Character art is currently placeholder and will be redrawn. Spec: [docs/character-art.md](docs/character-art.md).
+
+The older placeholder sheets can be regenerated from Aseprite by a Lua script:
 
 ```sh
 aseprite -b --script tools/gen_sprites.lua

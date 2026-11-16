@@ -18,7 +18,7 @@ func _ready() -> void:
 	rect.size = Vector2(26, 26)
 	shape.shape = rect
 	add_child(shape)
-	scale = Vector2(2.6, 2.6)
+	scale = Vector2(5.2, 5.2)
 	home = global_position
 
 func set_active(value: bool) -> void:

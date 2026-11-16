@@ -93,7 +93,7 @@ func _update_anim() -> void:
 		target = ("walk_" if is_moving() else "idle_") + facing_name
 	if sprite.animation != target:
 		sprite.play(target)
-	sprite.scale = Vector2(4.0, 3.2) if crouching and not sitting else Vector2(4.0, 4.0)
+	sprite.scale = Vector2(8.0, 6.4) if crouching and not sitting else Vector2(8.0, 8.0)
 
 func _build_sprite() -> void:
 	sprite = AnimatedSprite2D.new()
@@ -102,7 +102,7 @@ func _build_sprite() -> void:
 	add_child(sprite)
 
 func _draw() -> void:
-	draw_set_transform(Vector2(0, 78), 0.0, Vector2(1.0, 0.32))
-	draw_circle(Vector2.ZERO, 42.0, Color(0, 0, 0, 0.20))
+	draw_set_transform(Vector2(0, 156), 0.0, Vector2(1.0, 0.30))
+	draw_circle(Vector2.ZERO, 74.0, Color(0, 0, 0, 0.18))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	draw_arc(Vector2(0, 78), 46.0, 0.0, TAU, 32, Color(0.40, 0.70, 1.0, 0.28), 2.0)
+	draw_arc(Vector2(0, 156), 78.0, 0.0, TAU, 40, Color(0.40, 0.70, 1.0, 0.26), 3.0)
