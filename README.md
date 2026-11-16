@@ -38,6 +38,8 @@ The game opens with you sitting at your desk, staring at nothing. Press A or D t
 - Opening beat: seated, spaced out — the watch clicks on its own and the floor flickers into the night
   space once before you get control.
 - Auto-walk movement, crouch, and a drone-style camera that trails you with a slight sway.
+- Corner camera: turn 90° and the drone swings a little around the building — the floor tilts, pulls
+  back, and settles flat again. Outside the floor is the building's dark exterior.
 - **Resentment** is never shown as a number at first. You read it from the light: pale blue / pink /
   green early on, deepening as it climbs, black at the top. Past a threshold the watch starts showing a
   percentage. The number of monsters follows the same scale.

@@ -1,11 +1,13 @@
 extends Node2D
 
+const DRONE := preload("res://scripts/drone_camera.gd")
+
 const LEVEL_SIZE := Vector2(2112, 1056)
 const CAMERA_OFFSET := Vector2(0, -60)
 
 var level: Node2D
 var player: Node2D
-var camera: Camera2D
+var camera
 var tint: ColorRect
 var fade: ColorRect
 var task_label: Label
@@ -17,7 +19,6 @@ var big_label: Label
 
 var message_timer := 0.0
 var busy := false
-var drone_time := 0.0
 var controls_hint_shown := false
 
 func _ready() -> void:
@@ -35,16 +36,9 @@ func _ready() -> void:
 	_intro()
 
 func _process(delta: float) -> void:
-	drone_time += delta
-	_follow_camera(delta)
 	_paint_tint(delta)
 	_paint_hud(delta)
 	_layout()
-
-func _follow_camera(delta: float) -> void:
-	var sway := Vector2(sin(drone_time * 0.7) * 6.0, cos(drone_time * 0.53) * 4.0)
-	var target: Vector2 = player.global_position + CAMERA_OFFSET + sway
-	camera.global_position = camera.global_position.lerp(target, 1.0 - exp(-3.2 * delta))
 
 func _paint_tint(delta: float) -> void:
 	var target := Color(0, 0, 0, 0)
@@ -103,14 +97,13 @@ func _build_tint() -> void:
 	layer.add_child(tint)
 
 func _build_camera() -> void:
-	camera = Camera2D.new()
+	camera = DRONE.new()
+	camera.target = player
 	camera.limit_left = 0
 	camera.limit_top = 0
 	camera.limit_right = int(LEVEL_SIZE.x)
 	camera.limit_bottom = int(LEVEL_SIZE.y)
 	add_child(camera)
-	camera.global_position = player.global_position + CAMERA_OFFSET
-	camera.make_current()
 
 func _build_hud() -> void:
 	var layer := CanvasLayer.new()

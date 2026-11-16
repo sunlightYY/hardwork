@@ -40,6 +40,13 @@ func _ready() -> void:
 	_apply_phase()
 
 func _build_floor() -> void:
+	var backdrop := ColorRect.new()
+	backdrop.color = Color("14171e")
+	backdrop.position = Vector2(-1200, -1200)
+	backdrop.size = MAP_SIZE + Vector2(2400, 2400)
+	backdrop.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(backdrop)
+
 	var floor := ColorRect.new()
 	floor.color = Color("dfe3e8")
 	floor.size = MAP_SIZE
