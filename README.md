@@ -2,11 +2,15 @@
 
 A game made for [GitHub Game Off 2026](https://itch.io/jam/game-off-2026), theme: **SHIFT**.
 
-<!-- TODO: 一句话描述玩法 -->
+You are an office worker on the 28th-floor payroll of a building that does not want to let you go.
+Your watch has one button. Press it and the floor empties out — the lights go blue, pink, green, and
+something else starts walking the aisles.
 
-## Play
+Design notes: [docs/design.md](docs/design.md)
 
-<!-- TODO: 提交后换成 itch.io 链接 -->
+## Status
+
+Playable single-floor prototype. No win condition yet — the loop is work, shift, survive, repeat.
 
 ## Run from source
 
@@ -19,26 +23,36 @@ A game made for [GitHub Game Off 2026](https://itch.io/jam/game-off-2026), theme
 
 ## Controls
 
-<!-- TODO: 操作说明，提交前必须补齐 -->
+| Input | Action |
+|---|---|
+| Arrow keys / WASD | Choose a direction — you keep walking until you pick another one, get blocked, or crouch |
+| **Shift** | Switch space (day ⇄ night) |
+| Ctrl / C (hold) | Crouch: stops you and keeps the supervisor from noticing you |
+| E | Interact (work at your desk, splash water on your face) |
 
-## Project layout
+## What is in the build
 
-```
-scenes/    场景
-scripts/   GDScript
-assets/    美术、音频、字体
-```
+- One floor: cubicles, aisles, a corner, a sink, your own desk (the white one).
+- Auto-walk movement, crouch, and a drone-style camera that trails you with a slight sway.
+- **Resentment** drives the night palette: light blue / pink / green at low levels, deep colours as it
+  rises, black at the top. The number of monsters follows the same scale.
+- Shift swaps the world: coworkers and the supervisor vanish, monsters appear.
+- Supervisor patrols with a vision cone. Get seen walking and he scolds you — workload goes up.
+- Three tasks per day at your desk, day space only. Finishing them gives you `WORKING DONE`.
+- Washing your face at the sink lowers resentment, with a cooldown.
+- Getting touched by a monster drags you back to your desk and costs resentment.
 
 ## Assets
 
-所有美术与音频素材均为本项目原创；第三方素材（如有）会在此列出并注明来源与许可。
-如仓库中缺少某些资源，说明它们无法再分发，游戏会以占位资源运行。
+All visuals are drawn at runtime from primitives in `scripts/` — this is placeholder art, no external
+asset files. Audio is not implemented yet.
+If a build ever ships without redistributable assets, this section will list them.
 
 ## AI usage
 
-详见 itch.io 提交页的 AI 披露字段。本仓库中由 AI 生成或辅助的内容：
-<!-- TODO: 例如 "code scaffolding", "placeholder art", "none" -->
+AI assistance was used for code scaffolding and layout of this prototype. Final art, audio and design
+decisions are human-made. See the itch.io submission for the full disclosure.
 
 ## License
 
-<!-- TODO: 选定许可协议后补充 -->
+TBD.
