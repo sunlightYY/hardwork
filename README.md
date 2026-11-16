@@ -25,36 +25,21 @@ Playable single-floor prototype. No win condition yet — the loop is work, shif
 
 | Input | Action |
 |---|---|
-| A / D or ← / → | Pick a direction — you keep walking until you pick the other one or crouch |
-| **Shift** | Switch space (day ⇄ night) |
-| Ctrl / C (hold) | Crouch: stops you and keeps the supervisor from noticing you |
-| E | Interact (work at your desk, splash water on your face) |
-
-The game opens with you sitting at your desk, staring at nothing. Press A or D to stand up and start.
-
-The building is shown as a **facade cross-section**: curtain-wall mullions and floor slabs frame the
-view, you can see into the neighbouring floors, and the ceiling sits low — the floor is only three
-desks tall. Wall at the back, people in the middle, desks and plants in front of them. Walk to either
-end of the corridor and the drone swings around the corner into the next stretch.
+| A / D (or ← / →) | Stand up at the start — after that you keep running right on your own |
+| **Shift** | Switch space. Every switch sends items crashing down around you |
+| E | Hand the item you are carrying to the person blocking the way |
 
 ## What is in the build
 
-- One floor cut into two corridors: an open office and the corridor leading to the restrooms.
-- Foreground desks, monitors and plants sit in front of the characters and block their legs, which is
-  what gives the flat cross-section some depth.
-- Opening beat: seated, spaced out — the watch clicks on its own and the floor flickers into the night
-  space once before you get control.
-- Auto-walk movement, crouch, and a drone-style camera that trails you with a slight sway.
-- Corner camera: walk to either end of a corridor and the drone swings around the building — the view
-  tilts, pulls back, and lands on the next stretch.
-- **Resentment** is never shown as a number at first. You read it from the light: pale blue / pink /
-  green early on, deepening as it climbs, black at the top. Past a threshold the watch starts showing a
-  percentage. The number of monsters follows the same scale.
-- Shift swaps the world: coworkers and the supervisor vanish, monsters appear.
-- Supervisor patrols with a vision cone. Get seen walking and he scolds you — workload goes up.
-- Three tasks per day at your desk, day space only. Finishing them gives you `WORKING DONE`.
-- Washing your face at the sink lowers resentment, with a cooldown.
-- Getting touched by a monster drags you back to your desk and costs resentment.
+- A single office floor shown as a facade cross-section, and 28 floors to get through.
+- You run right automatically. A colleague stands in the way and wants one specific thing —
+  the bubble over their head shows which.
+- Switching space costs resentment and drops three items: boxing gloves, playing cards, work
+  documents. You pick up whatever lands within reach, so you may have to switch again to re-roll.
+- Hand over the right item and they step aside; reach the far end of the floor and you drop to the
+  next one. Floor 28 down to floor 1.
+- Resentment still drives the light: pale blue / pink / green early on, deepening towards black.
+  Past a threshold the watch starts showing a percentage.
 
 ## Assets
 

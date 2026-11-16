@@ -1,35 +1,32 @@
 extends CharacterBody2D
 
-signal interact_requested(kind: String)
-
 const SHEET := preload("res://assets/art/player.png")
-const SPEED := 230.0
-const INTERACT_RADIUS := 150.0
+const SPEED := 200.0
+const PICKUP_RADIUS := 110.0
+const GIVE_RADIUS := 190.0
 
-var dir := Vector2.RIGHT
-var facing_name := "right"
-var crouching := false
 var frozen := false
 var sitting := true
 var anim_time := 0.0
-var near := ""
-var work_point := Vector2.ZERO
-var sink_point := Vector2.ZERO
-var min_x := 0.0
-var max_x := 10000.0
 var sprite: AnimatedSprite2D
+var requester: Node2D
 
 func _ready() -> void:
 	add_to_group("player")
 	collision_layer = 2
-	collision_mask = 1
+	collision_mask = 17
 	var shape := CollisionShape2D.new()
 	var rect := RectangleShape2D.new()
-	rect.size = Vector2(26, 40)
+	rect.size = Vector2(56, 300)
 	shape.shape = rect
-	shape.position = Vector2(0, 8)
+	shape.position = Vector2(0, -110)
 	add_child(shape)
-	_build_sprite()
+
+	sprite = AnimatedSprite2D.new()
+	sprite.frames = Sheet.frames(SHEET)
+	sprite.animation = "idle_right"
+	sprite.scale = Vector2(8.0, 8.0)
+	add_child(sprite)
 
 func _physics_process(delta: float) -> void:
 	anim_time += delta
@@ -39,70 +36,77 @@ func _physics_process(delta: float) -> void:
 		_update_anim()
 		return
 
-	var axis := Input.get_axis("move_left", "move_right")
 	if sitting:
 		velocity = Vector2.ZERO
 		move_and_slide()
-		if axis != 0.0:
+		if Input.is_action_just_pressed("move_right") or Input.is_action_just_pressed("move_left"):
 			sitting = false
-			dir.x = signf(axis)
-			facing_name = "right" if axis > 0.0 else "left"
 		_update_anim()
 		queue_redraw()
 		return
 
-	if axis != 0.0:
-		dir.x = signf(axis)
-		facing_name = "right" if axis > 0.0 else "left"
-
-	crouching = Input.is_action_pressed("crouch")
-	velocity = Vector2(dir.x * (0.0 if crouching else SPEED), 0.0)
+	velocity = Vector2(SPEED, 0.0)
 	move_and_slide()
-	global_position.x = clampf(global_position.x, min_x, max_x)
 
 	if Input.is_action_just_pressed("toggle_phase"):
 		WorldState.toggle_phase()
 
-	_update_near()
-	if near != "" and Input.is_action_just_pressed("interact"):
-		interact_requested.emit(near)
-
+	_check_pickup()
+	_try_give()
 	_update_anim()
 	queue_redraw()
 
-func is_moving() -> bool:
-	return not crouching and velocity.length() > 10.0
+func _check_pickup() -> void:
+	for node in get_tree().get_nodes_in_group("item"):
+		if node.falling:
+			continue
+		if absf(node.global_position.x - global_position.x) > PICKUP_RADIUS:
+			continue
+		WorldState.pick_up(node.kind)
+		WorldState.post_message("PICKED UP: " + item_label(node.kind), 1.4)
+		node.queue_free()
 
-func _update_near() -> void:
-	near = ""
-	var best := INTERACT_RADIUS
-	if not WorldState.is_night:
-		var d := absf(global_position.x - work_point.x)
-		if d < best:
-			best = d
-			near = "work"
-	var d2 := absf(global_position.x - sink_point.x)
-	if d2 < best:
-		near = "sink"
+func _try_give() -> void:
+	if requester == null or requester.satisfied:
+		return
+	if absf(requester.global_position.x - global_position.x) > GIVE_RADIUS:
+		return
+	if not Input.is_action_just_pressed("interact"):
+		return
+	try_give_now()
+
+func try_give_now() -> void:
+	if requester == null or requester.satisfied:
+		return
+	if WorldState.held == "":
+		WorldState.post_message("YOUR HANDS ARE EMPTY", 1.6)
+	elif WorldState.held == WorldState.request:
+		requester.satisfy()
+		WorldState.consume()
+		WorldState.post_message("HE TAKES IT. THE WAY IS OPEN.", 2.2)
+	else:
+		WorldState.post_message("NOT WHAT HE WANTS", 1.6)
+
+func item_label(kind: String) -> String:
+	match kind:
+		"gloves":
+			return "BOXING GLOVES"
+		"cards":
+			return "PLAYING CARDS"
+		"doc":
+			return "WORK DOCUMENT"
+	return "SOMETHING"
 
 func _update_anim() -> void:
 	if sprite == null:
 		return
 	var target := "sit"
 	if not sitting:
-		target = ("walk_" if is_moving() else "idle_") + facing_name
+		target = "walk_right" if velocity.length() > 10.0 else "idle_right"
 	if sprite.animation != target:
 		sprite.play(target)
-	sprite.scale = Vector2(8.0, 6.4) if crouching and not sitting else Vector2(8.0, 8.0)
-
-func _build_sprite() -> void:
-	sprite = AnimatedSprite2D.new()
-	sprite.frames = Sheet.frames(SHEET)
-	sprite.animation = "sit"
-	add_child(sprite)
 
 func _draw() -> void:
 	draw_set_transform(Vector2(0, 156), 0.0, Vector2(1.0, 0.30))
 	draw_circle(Vector2.ZERO, 74.0, Color(0, 0, 0, 0.18))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	draw_arc(Vector2(0, 156), 78.0, 0.0, TAU, 40, Color(0.40, 0.70, 1.0, 0.26), 3.0)

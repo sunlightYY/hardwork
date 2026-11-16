@@ -2,21 +2,17 @@ extends Node
 
 signal phase_changed(is_night: bool)
 signal resentment_changed(value: float)
-signal tasks_changed(done: int, total: int)
 signal message_posted(text: String, seconds: float)
-signal day_completed
-signal player_caught
+signal floor_changed(value: int)
+signal inventory_changed(held: String)
+signal run_completed
 
 const BASE_RISE := 0.010
-const SCOLD_GAIN := 0.05
-const CAUGHT_GAIN := 0.10
-const WASH_RELIEF := 0.10
-const TASK_RELIEF := 0.12
-const WASH_COOLDOWN := 8.0
-const TASK_BASE := 3
-const TASK_MAX := 6
+const SWITCH_COST := 0.05
+const ITEM_TYPES := ["gloves", "cards", "doc"]
+const START_FLOOR := 28
 const WATCH_REVEAL := 0.55
-const MONSTERS_PER_TIER := [0, 1, 2, 3]
+const MONSTERS_PER_TIER := [0, 1, 1, 2]
 
 const TINTS := [
 	Color(0.72, 0.93, 1.00),
@@ -41,10 +37,10 @@ const BINDINGS := {
 
 var is_night := false
 var resentment := 0.0
-var tasks_done := 0
-var tasks_total := TASK_BASE
-var wash_cooldown := 0.0
 var watch_visible := false
+var floor_number := START_FLOOR
+var held := ""
+var request := ""
 var running := true
 
 func _ready() -> void:
@@ -53,7 +49,6 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if not running:
 		return
-	wash_cooldown = maxf(0.0, wash_cooldown - delta)
 	_set_resentment(resentment + BASE_RISE * delta)
 
 func tier() -> int:
@@ -76,38 +71,26 @@ func tint() -> Color:
 
 func toggle_phase() -> void:
 	is_night = not is_night
+	_set_resentment(resentment + SWITCH_COST)
 	phase_changed.emit(is_night)
 
-func wash_face() -> void:
-	if wash_cooldown > 0.0:
-		post_message("THE MIRROR IS STILL WET", 1.5)
-		return
-	wash_cooldown = WASH_COOLDOWN
-	_set_resentment(resentment - WASH_RELIEF)
-	post_message("YOU SPLASH WATER ON YOUR FACE", 2.0)
+func roll_request() -> void:
+	request = ITEM_TYPES[randi() % ITEM_TYPES.size()]
 
-func get_scolded() -> void:
-	_set_resentment(resentment + SCOLD_GAIN)
-	tasks_total = mini(tasks_total + 1, TASK_MAX)
-	tasks_changed.emit(tasks_done, tasks_total)
-	post_message("SUPERVISOR: STOP WANDERING AROUND", 2.5)
+func pick_up(kind: String) -> void:
+	held = kind
+	inventory_changed.emit(held)
 
-func complete_task() -> void:
-	tasks_done += 1
-	_set_resentment(resentment - TASK_RELIEF)
-	tasks_changed.emit(tasks_done, tasks_total)
-	if tasks_done >= tasks_total:
-		day_completed.emit()
+func consume() -> void:
+	held = ""
+	inventory_changed.emit(held)
 
-func caught() -> void:
-	_set_resentment(resentment + CAUGHT_GAIN)
-	post_message("SOMETHING DRAGGED YOU BACK", 2.0)
-	player_caught.emit()
-
-func start_new_day() -> void:
-	tasks_done = 0
-	tasks_total = TASK_BASE
-	tasks_changed.emit(tasks_done, tasks_total)
+func descend() -> void:
+	floor_number -= 1
+	floor_changed.emit(floor_number)
+	if floor_number <= 0:
+		running = false
+		run_completed.emit()
 
 func post_message(text: String, seconds: float) -> void:
 	message_posted.emit(text, seconds)
