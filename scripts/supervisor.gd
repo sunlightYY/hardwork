@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+const SHEET := preload("res://assets/art/supervisor.png")
+
 const SPEED := 95.0
 const VIEW_DISTANCE := 300.0
 const VIEW_HALF_ANGLE := 0.75
@@ -12,6 +14,7 @@ var player: Node2D
 var facing := Vector2.RIGHT
 var suspicion := 0.0
 var cooldown := 0.0
+var sprite: AnimatedSprite2D
 
 func _ready() -> void:
 	collision_layer = 4
@@ -21,6 +24,10 @@ func _ready() -> void:
 	rect.size = Vector2(24, 24)
 	shape.shape = rect
 	add_child(shape)
+	sprite = AnimatedSprite2D.new()
+	sprite.frames = Sheet.frames(SHEET)
+	sprite.animation = "idle_down"
+	add_child(sprite)
 	global_position = waypoints[0]
 
 func _physics_process(delta: float) -> void:
@@ -29,6 +36,7 @@ func _physics_process(delta: float) -> void:
 	if WorldState.is_night or player == null:
 		velocity = Vector2.ZERO
 		suspicion = 0.0
+		_update_anim()
 		queue_redraw()
 		return
 
@@ -52,7 +60,15 @@ func _physics_process(delta: float) -> void:
 		cooldown = SCOLD_COOLDOWN
 		WorldState.get_scolded()
 
+	_update_anim()
 	queue_redraw()
+
+func _update_anim() -> void:
+	if sprite == null:
+		return
+	var target := ("walk_" if velocity.length() > 1.0 else "idle_") + Sheet.dir_name(facing)
+	if sprite.animation != target:
+		sprite.play(target)
 
 func _can_see_player() -> bool:
 	var to_player := player.global_position - global_position
@@ -77,13 +93,5 @@ func _draw() -> void:
 	draw_colored_polygon(points, cone)
 
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.6))
-	draw_circle(Vector2(0, 24), 15.0, Color(0, 0, 0, 0.16))
+	draw_circle(Vector2(0, 18), 14.0, Color(0, 0, 0, 0.16))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-
-	draw_rect(Rect2(-11, 2, 22, 14), Color("15171c"))
-	draw_rect(Rect2(-14, -15, 28, 22), Color("1d2027"))
-	draw_rect(Rect2(-12, -13, 24, 18), Color("23262e"))
-	draw_rect(Rect2(-4, -13, 8, 7), Color("e9edf4"))
-	draw_rect(Rect2(-1.5, -11, 3, 14), Color("8c2a33"))
-	draw_circle(Vector2(0, -20), 10.6, Color("f0c9a6"))
-	draw_rect(Rect2(-10, -26, 20, 6), Color("14161b"))

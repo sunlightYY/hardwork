@@ -2,11 +2,12 @@ extends CharacterBody2D
 
 signal interact_requested(kind: String)
 
+const SHEET := preload("res://assets/art/player.png")
 const SPEED := 170.0
 const INTERACT_RADIUS := 96.0
 
 var dir := Vector2.ZERO
-var facing := 1.0
+var facing_name := "down"
 var crouching := false
 var frozen := false
 var sitting := true
@@ -14,6 +15,7 @@ var anim_time := 0.0
 var near := ""
 var work_point := Vector2.ZERO
 var sink_point := Vector2.ZERO
+var sprite: AnimatedSprite2D
 
 func _ready() -> void:
 	add_to_group("player")
@@ -24,13 +26,14 @@ func _ready() -> void:
 	rect.size = Vector2(24, 24)
 	shape.shape = rect
 	add_child(shape)
+	_build_sprite()
 
 func _physics_process(delta: float) -> void:
 	anim_time += delta
 	if frozen:
 		velocity = Vector2.ZERO
 		move_and_slide()
-		queue_redraw()
+		_update_anim()
 		return
 
 	var input := Vector2(
@@ -41,13 +44,14 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		if _any_direction_just_pressed():
 			sitting = false
+			facing_name = _dir_from(input) if input != Vector2.ZERO else "down"
+		_update_anim()
 		queue_redraw()
 		return
 
 	if input != Vector2.ZERO:
 		dir = input.normalized()
-		if absf(dir.x) > 0.1:
-			facing = signf(dir.x)
+		facing_name = _dir_from(dir)
 
 	crouching = Input.is_action_pressed("crouch")
 	velocity = dir * (0.0 if crouching else SPEED)
@@ -60,10 +64,16 @@ func _physics_process(delta: float) -> void:
 	if near != "" and Input.is_action_just_pressed("interact"):
 		interact_requested.emit(near)
 
+	_update_anim()
 	queue_redraw()
 
 func is_moving() -> bool:
 	return not crouching and velocity.length() > 10.0
+
+func _dir_from(vector: Vector2) -> String:
+	if absf(vector.x) > absf(vector.y):
+		return "right" if vector.x > 0.0 else "left"
+	return "up" if vector.y < 0.0 else "down"
 
 func _any_direction_just_pressed() -> bool:
 	return (Input.is_action_just_pressed("move_left")
@@ -83,36 +93,24 @@ func _update_near() -> void:
 	if d2 < best:
 		near = "sink"
 
-func _draw() -> void:
-	if sitting:
-		_draw_sitting()
+func _update_anim() -> void:
+	if sprite == null:
 		return
+	var target := "sit"
+	if not sitting:
+		target = ("walk_" if is_moving() else "idle_") + facing_name
+	if sprite.animation != target:
+		sprite.play(target)
+	sprite.scale = Vector2(1.0, 0.8) if crouching and not sitting else Vector2.ONE
 
-	var squash := 0.8 if crouching else 1.0
-	var bob := 0.0
-	if is_moving():
-		bob = sin(anim_time * 14.0) * 1.6
+func _build_sprite() -> void:
+	sprite = AnimatedSprite2D.new()
+	sprite.frames = Sheet.frames(SHEET)
+	sprite.animation = "sit"
+	add_child(sprite)
 
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.6))
-	draw_circle(Vector2(0, 24), 15.0, Color(0, 0, 0, 0.16))
+func _draw() -> void:
+	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.55))
+	draw_circle(Vector2(0, 20), 15.0, Color(0, 0, 0, 0.16))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
-	draw_arc(Vector2(0, 18), 22.0, 0.0, TAU, 28, Color(0.40, 0.70, 1.0, 0.35), 2.0)
-
-	draw_rect(Rect2(-11, 2 * squash + bob, 22, 14 * squash), Color("22252b"))
-	draw_rect(Rect2(-14, -15 * squash + bob, 28, 22 * squash), Color("2b3038"))
-	draw_rect(Rect2(-12, -13 * squash + bob, 24, 18 * squash), Color("ffffff"))
-	draw_rect(Rect2(-12, -1 * squash + bob, 24, 3), Color("dbe3ee"))
-	draw_rect(Rect2(-3, -13 * squash + bob, 6, 9), Color("cfd6e0"))
-
-	var head_y := -20.0 * squash + bob
-	draw_circle(Vector2(0, head_y), 11.0, Color("1b1d22"))
-	draw_circle(Vector2(facing * 4.0, head_y - 0.5), 6.8, Color("f0c9a6"))
-
-func _draw_sitting() -> void:
-	draw_arc(Vector2(0, 16), 22.0, 0.0, TAU, 28, Color(0.40, 0.70, 1.0, 0.35), 2.0)
-	draw_rect(Rect2(-17, -12, 34, 22), Color("3a4150"))
-	draw_rect(Rect2(-13, -15, 26, 21), Color("2b3038"))
-	draw_rect(Rect2(-11, -14, 22, 17), Color("ffffff"))
-	draw_rect(Rect2(-11, -1, 22, 3), Color("dbe3ee"))
-	draw_circle(Vector2(0, -20), 11.0, Color("1b1d22"))
-	draw_circle(Vector2(0, -14.5), 5.6, Color("f0c9a6"))
+	draw_arc(Vector2(0, 19), 23.0, 0.0, TAU, 28, Color(0.40, 0.70, 1.0, 0.35), 2.0)

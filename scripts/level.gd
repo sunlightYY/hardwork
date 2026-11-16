@@ -129,15 +129,12 @@ func _spawn_day_actors() -> void:
 	add_child(day_actors)
 
 	var seats := [
-		Vector2(180, 152), Vector2(396, 152), Vector2(612, 332),
-		Vector2(828, 332), Vector2(396, 512), Vector2(612, 692),
-		Vector2(1040, 720), Vector2(1700, 200),
+		Vector2(192, 246), Vector2(408, 246), Vector2(624, 246), Vector2(840, 246),
+		Vector2(192, 426), Vector2(408, 426), Vector2(624, 426), Vector2(840, 426),
 	]
 	for i in range(seats.size()):
 		var worker := COWORKER.new()
 		worker.global_position = seats[i]
-		worker.phase_offset = float(i) * 0.9
-		worker.facing = -1.0 if i % 2 == 0 else 1.0
 		day_actors.add_child(worker)
 
 	supervisor = SUPERVISOR.new()

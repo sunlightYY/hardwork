@@ -51,9 +51,18 @@ The game opens with you sitting at your desk, staring at nothing. Press A or D t
 
 ## Assets
 
-All visuals are drawn at runtime from primitives in `scripts/` — this is placeholder art, no external
-asset files. Audio is not implemented yet.
-If a build ever ships without redistributable assets, this section will list them.
+Character art is generated from Aseprite by a Lua script:
+
+```sh
+aseprite -b --script tools/gen_sprites.lua
+```
+
+It writes `assets/art/player.png`, `coworker.png` and `supervisor.png` — each a 144×240 sheet of
+48×48 cells: four directions × (idle, walk1, walk2) plus a seated row. Edit the palettes or the shape
+functions in the script and re-run; the game picks the sheets up by name.
+
+The office itself (desks, walls, floor) is still drawn at runtime from primitives in `scripts/level.gd`.
+Audio is not implemented yet.
 
 ## AI usage
 
