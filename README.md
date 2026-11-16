@@ -30,12 +30,17 @@ Playable single-floor prototype. No win condition yet — the loop is work, shif
 | Ctrl / C (hold) | Crouch: stops you and keeps the supervisor from noticing you |
 | E | Interact (work at your desk, splash water on your face) |
 
+The game opens with you sitting at your desk, staring at nothing. Press A or D to stand up and start.
+
 ## What is in the build
 
 - One floor: cubicles, aisles, a corner, a sink, your own desk (the white one).
+- Opening beat: seated, spaced out — the watch clicks on its own and the floor flickers into the night
+  space once before you get control.
 - Auto-walk movement, crouch, and a drone-style camera that trails you with a slight sway.
-- **Resentment** drives the night palette: light blue / pink / green at low levels, deep colours as it
-  rises, black at the top. The number of monsters follows the same scale.
+- **Resentment** is never shown as a number at first. You read it from the light: pale blue / pink /
+  green early on, deepening as it climbs, black at the top. Past a threshold the watch starts showing a
+  percentage. The number of monsters follows the same scale.
 - Shift swaps the world: coworkers and the supervisor vanish, monsters appear.
 - Supervisor patrols with a vision cone. Get seen walking and he scolds you — workload goes up.
 - Three tasks per day at your desk, day space only. Finishing them gives you `WORKING DONE`.

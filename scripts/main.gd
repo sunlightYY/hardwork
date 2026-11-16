@@ -10,6 +10,7 @@ var tint: ColorRect
 var fade: ColorRect
 var task_label: Label
 var phase_label: Label
+var watch_label: Label
 var hint_label: Label
 var message_label: Label
 var big_label: Label
@@ -17,6 +18,7 @@ var big_label: Label
 var message_timer := 0.0
 var busy := false
 var drone_time := 0.0
+var controls_hint_shown := false
 
 func _ready() -> void:
 	level = $Level
@@ -30,7 +32,7 @@ func _ready() -> void:
 	WorldState.day_completed.connect(_on_day_completed)
 	WorldState.player_caught.connect(_on_caught)
 	_on_tasks_changed(WorldState.tasks_done, WorldState.tasks_total)
-	_on_message("SHIFT: WATCH BUTTON   E: INTERACT   CTRL: CROUCH", 5.0)
+	_intro()
 
 func _process(delta: float) -> void:
 	drone_time += delta
@@ -48,7 +50,8 @@ func _paint_tint(delta: float) -> void:
 	var target := Color(0, 0, 0, 0)
 	if WorldState.is_night:
 		target = WorldState.tint()
-		target.a = 0.10 + 0.55 * WorldState.resentment
+		target.s = clampf(target.s * 2.0, 0.0, 1.0)
+		target.a = 0.26 + 0.44 * WorldState.resentment
 	tint.color = tint.color.lerp(target, 1.0 - exp(-6.0 * delta))
 
 func _paint_hud(delta: float) -> void:
@@ -56,8 +59,17 @@ func _paint_hud(delta: float) -> void:
 	phase_label.add_theme_color_override("font_color",
 		Color("c9a3ff") if WorldState.is_night else Color("8fa3b8"))
 
+	watch_label.visible = WorldState.watch_visible
+	if watch_label.visible:
+		watch_label.text = "WATCH  %d%%" % int(round(WorldState.resentment * 100.0))
+
 	hint_label.text = ""
-	if not busy:
+	if player.sitting:
+		hint_label.text = "A / D     LEFT     RIGHT"
+	elif not busy:
+		if not controls_hint_shown:
+			controls_hint_shown = true
+			WorldState.post_message("SHIFT: WATCH    E: INTERACT    CTRL: CROUCH", 4.5)
 		match player.near:
 			"work":
 				hint_label.text = "E   DO YOUR WORK"
@@ -75,6 +87,7 @@ func _paint_hud(delta: float) -> void:
 func _layout() -> void:
 	var vp := get_viewport_rect().size
 	phase_label.position = Vector2(vp.x - 32.0 - phase_label.size.x, 24.0)
+	watch_label.position = Vector2(vp.x - 32.0 - watch_label.size.x, 58.0)
 	message_label.position = Vector2((vp.x - message_label.size.x) * 0.5, 132.0)
 	hint_label.position = Vector2((vp.x - hint_label.size.x) * 0.5, vp.y - 76.0)
 	big_label.position = Vector2((vp.x - big_label.size.x) * 0.5, (vp.y - big_label.size.y) * 0.5)
@@ -117,6 +130,10 @@ func _build_hud() -> void:
 	phase_label = _make_label(24, Color("8fa3b8"))
 	layer.add_child(phase_label)
 
+	watch_label = _make_label(22, Color("d9c8ff"))
+	watch_label.visible = false
+	layer.add_child(watch_label)
+
 	message_label = _make_label(26, Color("ffd9a0"))
 	layer.add_child(message_label)
 
@@ -141,6 +158,17 @@ func _on_message(text: String, seconds: float) -> void:
 	message_label.text = text
 	message_timer = seconds
 	_layout()
+
+func _intro() -> void:
+	player.sitting = true
+	player.frozen = true
+	WorldState.post_message("ANOTHER DAY. SAME SPREADSHEET.", 2.6)
+	await get_tree().create_timer(1.8).timeout
+	WorldState.toggle_phase()
+	await get_tree().create_timer(1.4).timeout
+	WorldState.toggle_phase()
+	WorldState.post_message("SOMETHING ON YOUR WRIST JUST CLICKED.", 3.0)
+	player.frozen = false
 
 func _on_caught() -> void:
 	if busy:

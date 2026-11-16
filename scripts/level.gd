@@ -9,7 +9,7 @@ const MAP_SIZE := Vector2(2112, 1056)
 const DESK_SIZE := Vector2(96, 56)
 
 var player: Node2D
-var player_home := Vector2(240, 648)
+var player_home := Vector2(192, 606)
 var work_point := Vector2(192, 596)
 var sink_point := Vector2(1968, 824)
 

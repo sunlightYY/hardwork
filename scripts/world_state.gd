@@ -15,6 +15,7 @@ const TASK_RELIEF := 0.12
 const WASH_COOLDOWN := 8.0
 const TASK_BASE := 3
 const TASK_MAX := 6
+const WATCH_REVEAL := 0.55
 const MONSTERS_PER_TIER := [0, 1, 2, 3]
 
 const TINTS := [
@@ -43,6 +44,7 @@ var resentment := 0.0
 var tasks_done := 0
 var tasks_total := TASK_BASE
 var wash_cooldown := 0.0
+var watch_visible := false
 var running := true
 
 func _ready() -> void:
@@ -112,6 +114,9 @@ func post_message(text: String, seconds: float) -> void:
 
 func _set_resentment(value: float) -> void:
 	resentment = clampf(value, 0.0, 1.0)
+	if not watch_visible and resentment >= WATCH_REVEAL:
+		watch_visible = true
+		post_message("YOUR WATCH IS SHOWING NUMBERS", 3.0)
 	resentment_changed.emit(resentment)
 
 func _setup_inputs() -> void:

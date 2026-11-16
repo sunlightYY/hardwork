@@ -9,6 +9,7 @@ var dir := Vector2.ZERO
 var facing := 1.0
 var crouching := false
 var frozen := false
+var sitting := true
 var anim_time := 0.0
 var near := ""
 var work_point := Vector2.ZERO
@@ -35,6 +36,14 @@ func _physics_process(delta: float) -> void:
 	var input := Vector2(
 		Input.get_axis("move_left", "move_right"),
 		Input.get_axis("move_up", "move_down"))
+	if sitting:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		if _any_direction_just_pressed():
+			sitting = false
+		queue_redraw()
+		return
+
 	if input != Vector2.ZERO:
 		dir = input.normalized()
 		if absf(dir.x) > 0.1:
@@ -56,6 +65,12 @@ func _physics_process(delta: float) -> void:
 func is_moving() -> bool:
 	return not crouching and velocity.length() > 10.0
 
+func _any_direction_just_pressed() -> bool:
+	return (Input.is_action_just_pressed("move_left")
+		or Input.is_action_just_pressed("move_right")
+		or Input.is_action_just_pressed("move_up")
+		or Input.is_action_just_pressed("move_down"))
+
 func _update_near() -> void:
 	near = ""
 	var best := INTERACT_RADIUS
@@ -69,6 +84,10 @@ func _update_near() -> void:
 		near = "sink"
 
 func _draw() -> void:
+	if sitting:
+		_draw_sitting()
+		return
+
 	var squash := 0.8 if crouching else 1.0
 	var bob := 0.0
 	if is_moving():
@@ -88,3 +107,12 @@ func _draw() -> void:
 	var head_y := -20.0 * squash + bob
 	draw_circle(Vector2(0, head_y), 11.0, Color("1b1d22"))
 	draw_circle(Vector2(facing * 4.0, head_y - 0.5), 6.8, Color("f0c9a6"))
+
+func _draw_sitting() -> void:
+	draw_arc(Vector2(0, 16), 22.0, 0.0, TAU, 28, Color(0.40, 0.70, 1.0, 0.35), 2.0)
+	draw_rect(Rect2(-17, -12, 34, 22), Color("3a4150"))
+	draw_rect(Rect2(-13, -15, 26, 21), Color("2b3038"))
+	draw_rect(Rect2(-11, -14, 22, 17), Color("ffffff"))
+	draw_rect(Rect2(-11, -1, 22, 3), Color("dbe3ee"))
+	draw_circle(Vector2(0, -20), 11.0, Color("1b1d22"))
+	draw_circle(Vector2(0, -14.5), 5.6, Color("f0c9a6"))
