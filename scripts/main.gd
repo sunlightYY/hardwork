@@ -2,8 +2,6 @@ extends Node2D
 
 const DRONE := preload("res://scripts/drone_camera.gd")
 
-const LEVEL_SIZE := Vector2(2112, 1056)
-const CAMERA_OFFSET := Vector2(0, -60)
 
 var level: Node2D
 var player: Node2D
@@ -20,6 +18,8 @@ var big_label: Label
 var message_timer := 0.0
 var busy := false
 var controls_hint_shown := false
+var segment := 0
+var corner_busy := false
 
 func _ready() -> void:
 	level = $Level
@@ -39,6 +39,34 @@ func _process(delta: float) -> void:
 	_paint_tint(delta)
 	_paint_hud(delta)
 	_layout()
+	_check_corner()
+
+func _check_corner() -> void:
+	if corner_busy or busy or level == null:
+		return
+	if segment == 0 and player.global_position.x > level.segment_a_end - 70.0:
+		_turn_corner(1, 1.0, level.segment_b_start + 150.0)
+	elif segment == 1 and player.global_position.x < level.segment_b_start + 70.0:
+		_turn_corner(0, -1.0, level.segment_a_end - 150.0)
+
+func _turn_corner(next_segment: int, swing_sign: float, target_x: float) -> void:
+	corner_busy = true
+	player.frozen = true
+	camera.trigger(swing_sign)
+	await get_tree().create_timer(0.34).timeout
+	await _flash(Color(0, 0, 0, 1), 0.22)
+	segment = next_segment
+	player.global_position = Vector2(target_x, level.char_y)
+	player.dir = Vector2(swing_sign, 0.0)
+	if next_segment == 0:
+		camera.set_bounds(level.segment_a_start, level.segment_a_end)
+	else:
+		camera.set_bounds(level.segment_b_start, level.segment_b_end)
+	camera.snap_to(player.global_position)
+	camera.trigger(-swing_sign)
+	await _flash(Color(0, 0, 0, 0), 0.42)
+	player.frozen = false
+	corner_busy = false
 
 func _paint_tint(delta: float) -> void:
 	var target := Color(0, 0, 0, 0)
@@ -99,10 +127,7 @@ func _build_tint() -> void:
 func _build_camera() -> void:
 	camera = DRONE.new()
 	camera.target = player
-	camera.limit_left = 0
-	camera.limit_top = 0
-	camera.limit_right = int(LEVEL_SIZE.x)
-	camera.limit_bottom = int(LEVEL_SIZE.y)
+	camera.set_bounds(level.segment_a_start, level.segment_a_end)
 	add_child(camera)
 
 func _build_hud() -> void:
@@ -171,7 +196,8 @@ func _on_caught() -> void:
 	big_label.text = ""
 	await _flash(Color(0.6, 0.05, 0.1, 0.85), 0.12)
 	player.global_position = level.player_home
-	camera.global_position = level.player_home + CAMERA_OFFSET
+	camera.snap_to(level.player_home)
+	segment = 0
 	await get_tree().create_timer(0.25).timeout
 	await _flash(Color(0.6, 0.05, 0.1, 0.0), 0.5)
 	player.frozen = false

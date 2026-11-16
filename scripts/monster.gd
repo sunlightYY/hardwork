@@ -37,10 +37,10 @@ func _physics_process(delta: float) -> void:
 	var to_player := player.global_position - global_position
 	var dist := to_player.length()
 	if dist < SIGHT and _has_line_of_sight():
-		velocity = to_player.normalized() * SPEED
+		velocity = Vector2(signf(to_player.x) * SPEED, 0.0)
 	else:
-		var to_home := home - global_position
-		velocity = to_home.normalized() * SPEED * 0.45 if to_home.length() > 8.0 else Vector2.ZERO
+		var dx: float = home.x - global_position.x
+		velocity = Vector2(signf(dx) * SPEED * 0.45, 0.0) if absf(dx) > 8.0 else Vector2.ZERO
 	move_and_slide()
 
 	if dist < CONTACT and caught_cooldown <= 0.0:
@@ -56,8 +56,8 @@ func _has_line_of_sight() -> bool:
 
 func _draw() -> void:
 	var bob := sin(anim * 3.4) * 3.0
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.6))
-	draw_circle(Vector2(0, 28), 18.0, Color(0, 0, 0, 0.28))
+	draw_set_transform(Vector2(0, 16), 0.0, Vector2(1.0, 0.35))
+	draw_circle(Vector2.ZERO, 22.0, Color(0, 0, 0, 0.28))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 	draw_rect(Rect2(-15, -30 + bob, 30, 44), Color("0d0d14"))

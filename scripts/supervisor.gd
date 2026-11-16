@@ -8,7 +8,7 @@ const VIEW_HALF_ANGLE := 0.75
 const SCOLD_AFTER := 1.2
 const SCOLD_COOLDOWN := 4.0
 
-var waypoints := [Vector2(300, 300), Vector2(900, 300), Vector2(900, 700), Vector2(300, 700)]
+var waypoints := [Vector2(1200, 618), Vector2(4100, 618)]
 var waypoint_index := 0
 var player: Node2D
 var facing := Vector2.RIGHT
@@ -27,6 +27,7 @@ func _ready() -> void:
 	sprite = AnimatedSprite2D.new()
 	sprite.frames = Sheet.frames(SHEET)
 	sprite.animation = "idle_down"
+	sprite.scale = Vector2(2.0, 2.0)
 	add_child(sprite)
 	global_position = waypoints[0]
 
@@ -45,8 +46,8 @@ func _physics_process(delta: float) -> void:
 		waypoint_index = (waypoint_index + 1) % waypoints.size()
 		target = waypoints[waypoint_index]
 	var to_target := (target - global_position).normalized()
-	facing = to_target
-	velocity = to_target * SPEED
+	facing = Vector2(signf(to_target.x), 0.0)
+	velocity = facing * SPEED
 	move_and_slide()
 
 	var sees := _can_see_player()
@@ -92,6 +93,6 @@ func _draw() -> void:
 		cone = Color(1.0, 0.30, 0.30, 0.22)
 	draw_colored_polygon(points, cone)
 
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.0, 0.6))
-	draw_circle(Vector2(0, 18), 14.0, Color(0, 0, 0, 0.16))
+	draw_set_transform(Vector2(0, 22), 0.0, Vector2(1.0, 0.35))
+	draw_circle(Vector2.ZERO, 18.0, Color(0, 0, 0, 0.18))
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

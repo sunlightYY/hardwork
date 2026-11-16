@@ -25,21 +25,27 @@ Playable single-floor prototype. No win condition yet — the loop is work, shif
 
 | Input | Action |
 |---|---|
-| Arrow keys / WASD | Choose a direction — you keep walking until you pick another one, get blocked, or crouch |
+| A / D or ← / → | Pick a direction — you keep walking until you pick the other one or crouch |
 | **Shift** | Switch space (day ⇄ night) |
 | Ctrl / C (hold) | Crouch: stops you and keeps the supervisor from noticing you |
 | E | Interact (work at your desk, splash water on your face) |
 
 The game opens with you sitting at your desk, staring at nothing. Press A or D to stand up and start.
 
+The floor is shown as a **side-on cross-section**: wall at the back, people in the middle, desks and
+plants in front of them. Walk to either end of the corridor and the drone swings around the corner into
+the next stretch.
+
 ## What is in the build
 
-- One floor: cubicles, aisles, a corner, a sink, your own desk (the white one).
+- One floor cut into two corridors: an open office and the corridor leading to the restrooms.
+- Foreground desks, monitors and plants sit in front of the characters and block their legs, which is
+  what gives the flat cross-section some depth.
 - Opening beat: seated, spaced out — the watch clicks on its own and the floor flickers into the night
   space once before you get control.
 - Auto-walk movement, crouch, and a drone-style camera that trails you with a slight sway.
-- Corner camera: turn 90° and the drone swings a little around the building — the floor tilts, pulls
-  back, and settles flat again. Outside the floor is the building's dark exterior.
+- Corner camera: walk to either end of a corridor and the drone swings around the building — the view
+  tilts, pulls back, and lands on the next stretch.
 - **Resentment** is never shown as a number at first. You read it from the light: pale blue / pink /
   green early on, deepening as it climbs, black at the top. Past a threshold the watch starts showing a
   percentage. The number of monsters follows the same scale.
